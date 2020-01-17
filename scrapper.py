@@ -5,21 +5,25 @@ from bs4 import BeautifulSoup
 
 from comment import Comment
 
-BASE_URL = "https://forum.hackthebox.eu/discussion/"
-
-
 def scrape_comments(thread_id):
     html = requests.get(f"{BASE_URL}{thread_id}").content
     soup = BeautifulSoup(html, 'html.parser')
     page_name = soup.find(class_="PageTitle").text
     print(page_name)
-    last_page = int(soup.find(class_="LastPage").text)
+    soup_last_page = soup.find(class_="LastPage")
+    if soup_last_page is None:
+        last_page = 1
+    else:
+        last_page = int(soup_last_page.text)
     comments = []
     for page_number in range(1, last_page + 1):
         page_url = f"{BASE_URL}{thread_id}/{page_name}/p{page_number}"
         page_comments = extract_page_comments(page_url)
         comments.extend(page_comments)
     return comments
+
+
+BASE_URL = "https://forum.hackthebox.eu/discussion/"
 
 
 def extract_page_comments(page_url):
