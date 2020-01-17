@@ -4,7 +4,7 @@ from stb.htb import *
 class Comment(object):
     def __init__(self, author, message, datetime, permalink):
         self.author = author
-        self.message = message
+        self.message = message.strip()
         self.datetime = datetime
         self.permalink = permalink
 
