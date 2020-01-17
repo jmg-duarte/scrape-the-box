@@ -13,7 +13,7 @@ def scrape(id):
     print(page_name)
     last_page = int(soup.find(class_="LastPage").text)
     for page in range(1, last_page + 1):
-        target_url = f"https://forum.hackthebox.eu/discussion/{id}/{page_name}/p{page}"
+        target_url = f"{BASE_URL}{id}/{page_name}/p{page}"
         html = requests.get(target_url).content
         soup = BeautifulSoup(html, 'html.parser')
         comments = soup.find_all(class_="Comment")
