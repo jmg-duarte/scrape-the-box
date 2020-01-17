@@ -44,9 +44,10 @@ def extract_comment(c):
 
 
 def get_args():
-    parser = argparse.ArgumentParser(description="Description placeholder")
-    parser.add_argument('id', type=str, help="The target thread id")
-    parser.add_argument('-o', '--output', type=str, help="Output file", metavar='output', required=False)
+    parser = argparse.ArgumentParser(
+        description="Scrape the Box is an automated tool to help you read all comments from a Hack the Box thread")
+    parser.add_argument('id', type=str, help="thread id")
+    parser.add_argument('-o', '--output', type=str, help="output file", metavar='file', required=False)
     args = parser.parse_args()
     # parser.add_argument('-p', help="The thread page number, use for a single page")
     return args
