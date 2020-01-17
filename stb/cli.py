@@ -1,5 +1,5 @@
 import click
-from stb.commands.fetch import scrape_thread_comments
+from stb.commands.fetch.thread import scrape_thread_comments
 
 
 @click.group()

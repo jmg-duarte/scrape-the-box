@@ -24,7 +24,7 @@ class Comment(object):
         username = c.find(class_='Username').text
         message = c.find(class_='Message').text
         permalink_html = c.find(class_='Permalink')
-        permalink = f"{BASE_URL}/{permalink_html['href']}"
+        permalink = f"{BASE_URL}{permalink_html['href']}"
         datetime = f"{permalink_html.time['datetime']}"
         # print(permalink)
         return Comment(username, message, datetime, permalink)

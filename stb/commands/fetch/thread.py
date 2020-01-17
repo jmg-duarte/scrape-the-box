@@ -1,11 +1,12 @@
 import requests
-from stb.htb import BASE_URL
+from stb.htb import DISCUSSION_URL
 from stb.htb.comment import Comment
 from bs4 import BeautifulSoup
 
 
 def scrape_thread_comments(tid, output=None):
     comments = scrape_comments(tid)
+    print(comments)
     if output is None:
         print_comments(comments)
     else:
@@ -24,7 +25,7 @@ def dump_comments(comments, fname):
 
 
 def get_page(tid):
-    page = requests.get(f"{BASE_URL}/{tid}")
+    page = requests.get(f"{DISCUSSION_URL}/{tid}")
     if page.status_code == 404:
         # TODO handle this better
         return None
@@ -43,7 +44,7 @@ def scrape_comments(thread_id):
         last_page = int(soup_last_page[0].text)
     comments = []
     for page_number in range(1, last_page + 1):
-        page_url = f"{BASE_URL}/{thread_id}/{page_name}/p{page_number}"
+        page_url = f"{DISCUSSION_URL}/{thread_id}/{page_name}/p{page_number}"
         page_comments = extract_page_comments(page_url)
         comments.extend(page_comments)
     return comments
