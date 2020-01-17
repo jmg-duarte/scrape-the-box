@@ -1,33 +1,19 @@
-import pprint
 import requests
 from bs4 import BeautifulSoup
 
+from comment import Comment
 
-class Comment(object):
-    def __init__(self, author, message, datetime, permalink):
-        self.author = author
-        self.message = message
-        self.datetime = datetime
-        self.permalink = permalink
-
-    def __str__(self) -> str:
-        return (f"author: {self.author}\n"
-                f"datetime: {self.datetime}\n"
-                f"permalink: {self.permalink}\n"
-                f"message: {self.message}")
+BASE_URL = "https://forum.hackthebox.eu/discussion/"
 
 
-url = "https://forum.hackthebox.eu/discussion/2427/traverxec"
-
-
-def scrape():
-    html = requests.get(url).content
+def scrape(id):
+    html = requests.get(f"{BASE_URL}{id}").content
     soup = BeautifulSoup(html, 'html.parser')
     page_name = soup.find(class_="PageTitle").text
     print(page_name)
     last_page = int(soup.find(class_="LastPage").text)
     for page in range(1, last_page + 1):
-        target_url = f"https://forum.hackthebox.eu/discussion/2427/{page_name}/p{page}"
+        target_url = f"https://forum.hackthebox.eu/discussion/{id}/{page_name}/p{page}"
         html = requests.get(target_url).content
         soup = BeautifulSoup(html, 'html.parser')
         comments = soup.find_all(class_="Comment")
@@ -41,4 +27,4 @@ def scrape():
             print(f"{page_name} #{page}\n{comment}")
 
 
-scrape()
+scrape(2427)
