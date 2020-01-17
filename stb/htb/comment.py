@@ -1,3 +1,6 @@
+from stb.htb import *
+
+
 class Comment(object):
     def __init__(self, author, message, datetime, permalink):
         self.author = author
@@ -13,13 +16,15 @@ class Comment(object):
                 f"message: {self.message}"
                 f"---\n")
 
+    def __contains__(self, text_query):
+        return text_query in self.message
+
     @staticmethod
     def extract_comment(c):
-        import scrapper
         username = c.find(class_="Username").text
         message = c.find(class_="Message").text
         permalink_html = c.find(class_="Permalink")
         permalink = permalink_html["href"]
-        datetime = f"{scrapper.BASE_URL}/{permalink_html.time['datetime']}"
+        datetime = f"{BASE_URL}/{permalink_html.time['datetime']}"
         # print(permalink)
         return Comment(username, message, datetime, permalink)
