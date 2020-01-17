@@ -1,4 +1,6 @@
 import click
+
+from stb.commands.fetch.front import scrape_frontpage
 from stb.commands.fetch.thread import scrape_thread_comments
 
 
@@ -19,7 +21,7 @@ def fetch():
 
 @fetch.command('front')
 def fetch_frontpage():
-    pass
+    scrape_frontpage()
 
 
 @fetch.command('thread')

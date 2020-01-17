@@ -1,7 +1,8 @@
 import requests
+from bs4 import BeautifulSoup
+
 from stb.htb import DISCUSSION_URL
 from stb.htb.comment import Comment
-from bs4 import BeautifulSoup
 
 
 def scrape_thread_comments(tid, output=None):
@@ -22,6 +23,17 @@ def dump_comments(comments, fname):
     with open(fname, 'w') as file:
         for comment in comments:
             file.write(str(comment))
+
+
+def extract_page_comments(page_url):
+    html = requests.get(page_url).content
+    soup = BeautifulSoup(html, 'html.parser')
+    soup_comments = soup.find_all(class_="Comment")
+    page_comments = []
+    for c in soup_comments:
+        page_comments.append(Comment.extract_comment(c))
+        # print(f"{page_name} #{page}\n{comment}")
+    return page_comments
 
 
 def get_page(tid):
@@ -48,14 +60,3 @@ def scrape_comments(thread_id):
         page_comments = extract_page_comments(page_url)
         comments.extend(page_comments)
     return comments
-
-
-def extract_page_comments(page_url):
-    html = requests.get(page_url).content
-    soup = BeautifulSoup(html, 'html.parser')
-    soup_comments = soup.find_all(class_="Comment")
-    page_comments = []
-    for c in soup_comments:
-        page_comments.append(Comment.extract_comment(c))
-        # print(f"{page_name} #{page}\n{comment}")
-    return page_comments
