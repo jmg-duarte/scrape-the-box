@@ -13,9 +13,9 @@ BASE_URL = "https://forum.hackthebox.eu/discussion"
 def scrape_comments(thread_id):
     html = requests.get(f"{BASE_URL}/{thread_id}").content
     soup = BeautifulSoup(html, 'html.parser')
-    page_name = soup.find_all(class_="PageTitle", limit=1).text
+    page_name = soup.find_all(class_="PageTitle", limit=1)[0].text
     print(page_name)
-    soup_last_page = soup.find_all(class_="LastPage", limit=1)
+    soup_last_page = soup.find_all(class_="LastPage", limit=1)[0]
     if soup_last_page is None:
         last_page = 1
     else:
