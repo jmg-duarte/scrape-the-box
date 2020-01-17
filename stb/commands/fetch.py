@@ -7,13 +7,32 @@ from bs4 import BeautifulSoup
 def scrape_thread_comments(tid, output=None):
     comments = scrape_comments(tid)
     if output is None:
-        print(comments)
+        print_comments(comments)
     else:
-        print(comments, file=output)
+        dump_comments(comments, output)
+
+
+def print_comments(comments):
+    for comment in comments:
+        print(comment)
+
+
+def dump_comments(comments, fname):
+    with open(fname, 'w') as file:
+        for comment in comments:
+            file.write(str(comment))
+
+
+def get_page(tid):
+    page = requests.get(f"{BASE_URL}/{tid}")
+    if page.status_code == 404:
+        # TODO handle this better
+        return None
+    return page
 
 
 def scrape_comments(thread_id):
-    html = requests.get(f"{BASE_URL}/{thread_id}").content
+    html = get_page(thread_id).content
     soup = BeautifulSoup(html, 'html.parser')
     page_name = soup.find_all(class_="PageTitle", limit=1)[0].text
     print(page_name)

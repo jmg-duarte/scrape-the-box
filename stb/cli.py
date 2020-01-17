@@ -24,5 +24,7 @@ def fetch_frontpage():
 
 @fetch.command('thread')
 @click.argument('tid', type=str)
-def fetch_thread(tid):
-    scrape_thread_comments(tid)
+@click.option('-o', '--output', flag_value=None)
+# @click.option('-f', '--format', flag_value="text", default=True)
+def fetch_thread(tid, output):
+    scrape_thread_comments(tid, output)
