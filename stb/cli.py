@@ -19,10 +19,30 @@ def fetch():
     """Fetches pages"""
 
 
+def print_all_warning(ctx, param, all):
+    if all:
+        r = click.confirm(
+            "This will scrape all discussions from the forum. Are you sure you want to continue?",
+            default=False,
+            show_default=True,
+        )
+        if not r:
+            ctx.abort()
+        return r
+
+
 @fetch.command("front")
 @click.option("-o", "--output", type=str, flag_value=None)
-def fetch_frontpage(output):
-    frontpage.scrape(output)
+@click.option(
+    "-a",
+    "--all",
+    "scrape_all",
+    flag_value=True,
+    is_flag=True,
+    callback=print_all_warning,
+)
+def fetch_frontpage(output, scrape_all):
+    frontpage.scrape(output, scrape_all)
 
 
 @fetch.command("thread")

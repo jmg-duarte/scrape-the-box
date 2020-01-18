@@ -32,6 +32,6 @@ def dump_discussions(discussions, output):
             print(str(discussion))
 
 
-def scrape(output):
+def scrape(output, all=False):
     fp_discussions = scrape_frontpage()
     dump_discussions(fp_discussions, output)
