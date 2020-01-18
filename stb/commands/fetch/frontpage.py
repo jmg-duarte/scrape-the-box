@@ -13,17 +13,6 @@ def get_frontpage():
     return frontpage
 
 
-def scrape(output):
-    fp_discussions = scrape_frontpage()
-    if output:
-        with open(output, "w") as output_file:
-            for discussion in fp_discussions:
-                output_file.write(str(discussion))
-    else:
-        for discussion in fp_discussions:
-            print(str(discussion))
-
-
 def scrape_frontpage():
     frontpage = get_frontpage()
     soup = BeautifulSoup(frontpage.content, "html.parser")
@@ -31,3 +20,18 @@ def scrape_frontpage():
     for item in soup.find_all(class_="ItemDiscussion"):
         discussions.append(Discussion.from_item(item))
     return discussions
+
+
+def dump_discussions(discussions, output):
+    if output:
+        with open(output, "w") as output_file:
+            for discussion in discussions:
+                output_file.write(str(discussion))
+    else:
+        for discussion in discussions:
+            print(str(discussion))
+
+
+def scrape(output):
+    fp_discussions = scrape_frontpage()
+    dump_discussions(fp_discussions, output)
