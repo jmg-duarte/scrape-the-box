@@ -1,6 +1,7 @@
 ## Installation
 
 ```
-pip install --editable .
+pip install -r requirements.txt
+python setup.py install
 stb
 ```
