@@ -5,7 +5,7 @@ from stb.htb import DISCUSSION_URL
 from stb.htb.comment import Comment
 
 
-def scrape_thread_comments(tid, output=None):
+def scrape(tid, output=None):
     comments = scrape_comments(tid)
     print(comments)
     if output is None:
@@ -20,14 +20,14 @@ def print_comments(comments):
 
 
 def dump_comments(comments, fname):
-    with open(fname, 'w') as file:
+    with open(fname, "w") as file:
         for comment in comments:
             file.write(str(comment))
 
 
 def extract_page_comments(page_url):
     html = requests.get(page_url).content
-    soup = BeautifulSoup(html, 'html.parser')
+    soup = BeautifulSoup(html, "html.parser")
     soup_comments = soup.find_all(class_="Comment")
     page_comments = []
     for c in soup_comments:
@@ -46,7 +46,7 @@ def get_page(tid):
 
 def scrape_comments(thread_id):
     html = get_page(thread_id).content
-    soup = BeautifulSoup(html, 'html.parser')
+    soup = BeautifulSoup(html, "html.parser")
     page_name = soup.find_all(class_="PageTitle", limit=1)[0].text
     print(page_name)
     soup_last_page = soup.find_all(class_="LastPage", limit=1)

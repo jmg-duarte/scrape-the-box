@@ -1,0 +1,4 @@
+{
+    "python.pythonPath": "/home/jmgduarte/anaconda3/envs/htb-scrapper/bin/python",
+    "python.formatting.provider": "black"
+}
