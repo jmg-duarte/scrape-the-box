@@ -1,3 +1,5 @@
+# ⚙ stb
+
 ## Installation
 
 ```
@@ -21,3 +23,11 @@ Commands:
   fetch   Fetch a page.
   search  [WIP] Search downloaded pages.
 ```
+
+## How to Search
+
+So far `stb` does not support search (yet!).
+
+In order to search you can use the classic `grep`, however it will only show the line.
+
+In order to avoid so, you can use your favorite text editor or `less`.
