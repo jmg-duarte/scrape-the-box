@@ -1,5 +1,6 @@
 import sys
 import json
+import requests
 
 from typing import Iterable
 
@@ -22,3 +23,11 @@ def _write(iter: Iterable, file, fmt: str):
         json.dump(iter, file, default=lambda x: x.__dict__)
     else:
         raise RuntimeError(f"unknown format: {fmt}")
+
+
+def fetch_page(url):
+    response = requests.get(url)
+    if response.status_code == 404:
+        # TODO handle this better
+        return None
+    return response.content

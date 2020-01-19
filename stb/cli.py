@@ -1,4 +1,5 @@
 import click
+import sys
 
 from stb.commands.fetch import frontpage
 from stb.commands.fetch import discussion
@@ -35,7 +36,7 @@ def print_all_warning(ctx, param, all):
 @click.option(
     "-f", "--fmt", "--format", type=click.Choice(["text", "json"]),
 )
-@click.option("-o", "--output", type=str)
+@click.option("-o", "--output", type=str, default=sys.stdout)
 @click.option(
     "-a",
     "--all",
@@ -55,4 +56,4 @@ def fetch_frontpage(output, scrape_all, fmt):
 )
 @click.option("-o", "--output", type=str)
 def fetch_thread(tid, output, fmt):
-    discussion.scrape(tid, output)
+    discussion.scrape(tid, output, fmt)

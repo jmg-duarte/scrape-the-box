@@ -8,39 +8,33 @@ from typing import Iterable
 
 from stb.htb import DISCUSSIONS_URL
 from stb.htb.discussion import Discussion
-from stb.commands.fetch.io import write_file
+from stb.commands.fetch import io
 
 
 def scrape(output_file, all=False, fmt="text"):
-    frontpage = get_frontpage()
+    frontpage = fetch_frontpage()
     if all:
         soup = BeautifulSoup(frontpage, "html.parser")
-        last_page = get_last_page(soup)
+        last_page = get_last_page_number(soup)
         discussions = []
         for page in range(1, last_page + 1):
-            frontpage = get_frontpage(page)
-            soup = BeautifulSoup(frontpage, "html.parser")
-            discussions.extend(get_discussions(soup))
+            frontpage = fetch_frontpage(page)
+            discussions.extend(scrape_page_discussions(frontpage))
     else:
         discussions = scrape_page_discussions(frontpage)
-    dump_discussions(discussions, output_file, fmt=fmt)
+    io.write_file(discussions, output_file, fmt)
 
 
-def get_frontpage(page_number=1):
-    frontpage = requests.get(f"{DISCUSSIONS_URL}/p{page_number}")
-    if frontpage.status_code == 404:
-        # TODO handle this better
-        return None
-    return frontpage.content
+def fetch_frontpage(page_number=1):
+    return io.fetch_page(f"{DISCUSSIONS_URL}/p{page_number}")
 
 
 def scrape_page_discussions(page):
     soup = BeautifulSoup(page, "html.parser")
-    last_page = get_last_page(soup)
     return get_discussions(soup)
 
 
-def get_last_page(soup) -> int:
+def get_last_page_number(soup) -> int:
     soup_lpage = soup.find_all(class_="LastPage")
     if soup_lpage:
         return int(soup_lpage[0].text)
@@ -52,11 +46,3 @@ def get_discussions(soup):
     for item in soup.find_all(class_="ItemDiscussion"):
         discussions.append(Discussion.from_item(item))
     return discussions
-
-
-def dump_discussions(discussions: Iterable[Discussion], path, fmt="text"):
-    if path:
-        with open(path, "w") as output_file:
-            write_file(discussions, file=output_file, fmt=fmt)
-    else:
-        write_file(discussions, fmt=fmt)

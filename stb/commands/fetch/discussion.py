@@ -1,12 +1,14 @@
 import requests
+import sys
+
 from bs4 import BeautifulSoup
 
 from stb.htb import DISCUSSION_URL
 from stb.htb.comment import Comment
-from stb.commands.fetch.io import write_file
+from stb.commands.fetch import io
 
 
-def scrape(tid, output=None):
+def scrape(tid, output=sys.stdout, fmt="text"):
     comments = scrape_comments(tid)
     if not output:
         print_comments(comments)
@@ -21,11 +23,11 @@ def print_comments(comments):
 
 def dump_comments(comments, fname):
     with open(fname, "w") as file:
-        write_file(comments, file)
+        io.write_file(comments, file)
 
 
 def extract_page_comments(page_url):
-    html = requests.get(page_url).content
+    html = io.fetch_page(page_url)
     soup = BeautifulSoup(html, "html.parser")
     soup_comments = soup.find_all(class_="Comment")
     page_comments = []
@@ -35,16 +37,8 @@ def extract_page_comments(page_url):
     return page_comments
 
 
-def get_page(tid):
-    page = requests.get(f"{DISCUSSION_URL}/{tid}")
-    if page.status_code == 404:
-        # TODO handle this better
-        return None
-    return page
-
-
 def scrape_comments(thread_id):
-    html = get_page(thread_id).content
+    html = _get_discussion_page(thread_id)
     soup = BeautifulSoup(html, "html.parser")
     page_name = soup.find_all(class_="PageTitle", limit=1)[0].text
     print(page_name)
@@ -59,3 +53,7 @@ def scrape_comments(thread_id):
         page_comments = extract_page_comments(page_url)
         comments.extend(page_comments)
     return comments
+
+
+def _get_discussion_page(tid):
+    return io.fetch_page(f"{DISCUSSION_URL}/{tid}")
