@@ -22,10 +22,10 @@ class Comment(object):
         return text_query in self.message
 
     @staticmethod
-    def extract_comment(c):
-        username = c.find(class_="Username").text
-        message = c.find(class_="Message").text
-        permalink_html = c.find(class_="Permalink")
+    def extract_comment(soup):
+        username = soup.find(class_="Username").text
+        message = soup.find(class_="Message").text
+        permalink_html = soup.find(class_="Permalink")
         permalink = f"{BASE_URL}{permalink_html['href']}"
         datetime = f"{permalink_html.time['datetime']}"
         # print(permalink)
