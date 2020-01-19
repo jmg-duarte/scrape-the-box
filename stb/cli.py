@@ -54,6 +54,6 @@ def fetch_frontpage(output, scrape_all, fmt):
 @click.option(
     "-f", "--fmt", "--format", type=click.Choice(["text", "json"]),
 )
-@click.option("-o", "--output", type=str)
+@click.option("-o", "--output", type=str, default=sys.stdout)
 def fetch_thread(tid, output, fmt):
     discussion.scrape(tid, output, fmt)

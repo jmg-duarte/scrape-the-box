@@ -10,20 +10,7 @@ from stb.commands.fetch import io
 
 def scrape(tid, output=sys.stdout, fmt="text"):
     comments = scrape_comments(tid)
-    if not output:
-        print_comments(comments)
-    else:
-        dump_comments(comments, output)
-
-
-def print_comments(comments):
-    for comment in comments:
-        print(comment)
-
-
-def dump_comments(comments, fname):
-    with open(fname, "w") as file:
-        io.write_file(comments, file)
+    io.write_file(comments, output, fmt)
 
 
 def extract_page_comments(page_url):
@@ -37,8 +24,8 @@ def extract_page_comments(page_url):
     return page_comments
 
 
-def scrape_comments(thread_id):
-    html = _get_discussion_page(thread_id)
+def scrape_comments(discussion_id):
+    html = fetch_discussion_page(discussion_id)
     soup = BeautifulSoup(html, "html.parser")
     page_name = soup.find_all(class_="PageTitle", limit=1)[0].text
     print(page_name)
@@ -49,11 +36,11 @@ def scrape_comments(thread_id):
         last_page = int(soup_last_page[0].text)
     comments = []
     for page_number in range(1, last_page + 1):
-        page_url = f"{DISCUSSION_URL}/{thread_id}/{page_name}/p{page_number}"
+        page_url = f"{DISCUSSION_URL}/{discussion_id}/{page_name}/p{page_number}"
         page_comments = extract_page_comments(page_url)
         comments.extend(page_comments)
     return comments
 
 
-def _get_discussion_page(tid):
+def fetch_discussion_page(tid):
     return io.fetch_page(f"{DISCUSSION_URL}/{tid}")
