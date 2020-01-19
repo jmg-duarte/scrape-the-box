@@ -12,18 +12,22 @@ def cli():
 
 @cli.command("search")
 def search():
+    """[WIP] Search downloaded pages."""
     print("search")
 
 
 @cli.group("fetch")
 def fetch():
-    """Fetches pages"""
+    """Fetch a page."""
 
 
 def print_all_warning(ctx, param, all):
     if all:
         r = click.confirm(
-            "This will scrape all discussions from the forum. Are you sure you want to continue?",
+            (
+                "This will scrape all discussions from the forum.\n"
+                "Are you sure you want to continue?"
+            ),
             default=False,
             show_default=True,
         )
@@ -46,6 +50,7 @@ def print_all_warning(ctx, param, all):
     callback=print_all_warning,
 )
 def fetch_frontpage(output, scrape_all, fmt):
+    """Fetch the frontpage."""
     frontpage.scrape(output, scrape_all, fmt)
 
 
@@ -56,4 +61,5 @@ def fetch_frontpage(output, scrape_all, fmt):
 )
 @click.option("-o", "--output", type=str, default=sys.stdout)
 def fetch_thread(tid, output, fmt):
+    """Fetch a discussion page."""
     discussion.scrape(tid, output, fmt)
