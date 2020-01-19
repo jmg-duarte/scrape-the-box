@@ -32,7 +32,10 @@ def print_all_warning(ctx, param, all):
 
 
 @fetch.command("front")
-@click.option("-o", "--output", type=str, flag_value=None)
+@click.option(
+    "-f", "--fmt", "--format", type=click.Choice(["text", "json"]),
+)
+@click.option("-o", "--output", type=str)
 @click.option(
     "-a",
     "--all",
@@ -41,13 +44,15 @@ def print_all_warning(ctx, param, all):
     is_flag=True,
     callback=print_all_warning,
 )
-def fetch_frontpage(output, scrape_all):
-    frontpage.scrape(output, scrape_all)
+def fetch_frontpage(output, scrape_all, fmt):
+    frontpage.scrape(output, scrape_all, fmt)
 
 
 @fetch.command("thread")
 @click.argument("tid", type=str)
-@click.option("-o", "--output", type=str, flag_value=None)
-# @click.option('-f', '--format', flag_value="text", default=True)
-def fetch_thread(tid, output):
+@click.option(
+    "-f", "--fmt", "--format", type=click.Choice(["text", "json"]),
+)
+@click.option("-o", "--output", type=str)
+def fetch_thread(tid, output, fmt):
     discussion.scrape(tid, output)
