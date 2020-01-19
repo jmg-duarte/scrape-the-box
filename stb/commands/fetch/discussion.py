@@ -8,7 +8,7 @@ from stb.htb.comment import Comment
 def scrape(tid, output=None):
     comments = scrape_comments(tid)
     print(comments)
-    if output is None:
+    if not output:
         print_comments(comments)
     else:
         dump_comments(comments, output)
