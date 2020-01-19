@@ -8,9 +8,10 @@ from typing import Iterable
 
 from stb.htb import DISCUSSIONS_URL
 from stb.htb.discussion import Discussion
+from stb.commands.fetch.io import write_file
 
 
-def scrape(output, all=False, fmt="text"):
+def scrape(output_file, all=False, fmt="text"):
     frontpage = get_frontpage()
     if all:
         soup = BeautifulSoup(frontpage, "html.parser")
@@ -22,7 +23,7 @@ def scrape(output, all=False, fmt="text"):
             discussions.extend(get_discussions(soup))
     else:
         discussions = scrape_page_discussions(frontpage)
-    dump_discussions(discussions, output, fmt=fmt)
+    dump_discussions(discussions, output_file, fmt=fmt)
 
 
 def get_frontpage(page_number=1):
@@ -53,21 +54,9 @@ def get_discussions(soup):
     return discussions
 
 
-def dump_discussions(discussions: Iterable[Discussion], file, fmt="text"):
-    if file:
-        with open(file, "w") as output_file:
-            write_discussions(discussions, file=file, fmt=fmt)
+def dump_discussions(discussions: Iterable[Discussion], path, fmt="text"):
+    if path:
+        with open(path, "w") as output_file:
+            write_file(discussions, file=output_file, fmt=fmt)
     else:
-        write_discussions(discussions, fmt=fmt)
-
-
-def write_discussions(discussions: Iterable[Discussion], file=sys.stdout, fmt="text"):
-    if fmt == "text":
-        discussions = map(str, discussions)
-        for discussion in discussions:
-            file.write(discussion)
-    elif fmt == "json":
-        # TODO there has to be a better way to do this
-        json.dump(discussions, file, default=lambda x: x.__dict__)
-    else:
-        raise RuntimeError(f"unknown format: {fmt}")
+        write_file(discussions, fmt=fmt)

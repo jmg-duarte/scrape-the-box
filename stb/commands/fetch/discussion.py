@@ -3,11 +3,11 @@ from bs4 import BeautifulSoup
 
 from stb.htb import DISCUSSION_URL
 from stb.htb.comment import Comment
+from stb.commands.fetch.io import write_file
 
 
 def scrape(tid, output=None):
     comments = scrape_comments(tid)
-    print(comments)
     if not output:
         print_comments(comments)
     else:
@@ -21,8 +21,7 @@ def print_comments(comments):
 
 def dump_comments(comments, fname):
     with open(fname, "w") as file:
-        for comment in comments:
-            file.write(str(comment))
+        write_file(comments, file)
 
 
 def extract_page_comments(page_url):
