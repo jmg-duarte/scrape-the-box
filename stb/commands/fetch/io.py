@@ -36,6 +36,9 @@ def fetch_page(url):
 
 
 def fetch_page_soup(url):
+    """
+    Fetches the page from 'url' and returns the respective 'soup'.
+    """
     page = fetch_page(url)
     if page:
         return BeautifulSoup(page, "html.parser")
