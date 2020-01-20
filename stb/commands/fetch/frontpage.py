@@ -15,7 +15,7 @@ def scrape(output_file, all=False, fmt="text"):
     frontpage = fetch_frontpage()
     if all:
         soup = BeautifulSoup(frontpage, "html.parser")
-        last_page = get_last_page_number(soup)
+        last_page = io.get_last_page_number(soup)
         discussions = []
         for page in range(1, last_page + 1):
             frontpage = fetch_frontpage(page)
@@ -32,13 +32,6 @@ def fetch_frontpage(page_number=1):
 def scrape_page_discussions(page):
     soup = BeautifulSoup(page, "html.parser")
     return get_discussions(soup)
-
-
-def get_last_page_number(soup) -> int:
-    soup_lpage = soup.find_all(class_="LastPage")
-    if soup_lpage:
-        return int(soup_lpage[0].text)
-    return 1
 
 
 def get_discussions(soup):

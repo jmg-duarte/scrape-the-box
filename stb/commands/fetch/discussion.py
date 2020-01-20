@@ -13,7 +13,7 @@ def scrape(tid, output=sys.stdout, fmt="text"):
     io.write_file(comments, output, fmt)
 
 
-def extract_page_comments(page_url):
+def extract_discussion_comments(page_url):
     html = io.fetch_page(page_url)
     soup = BeautifulSoup(html, "html.parser")
     soup_comments = soup.find_all(class_="Comment")
@@ -29,15 +29,11 @@ def scrape_comments(discussion_id):
     soup = BeautifulSoup(html, "html.parser")
     page_name = soup.find_all(class_="PageTitle", limit=1)[0].text
     print(page_name)
-    soup_last_page = soup.find_all(class_="LastPage", limit=1)
-    if not soup_last_page:
-        last_page = 1
-    else:
-        last_page = int(soup_last_page[0].text)
+    last_page = io.get_last_page_number(soup)
     comments = []
     for page_number in range(1, last_page + 1):
         page_url = f"{DISCUSSION_URL}/{discussion_id}/{page_name}/p{page_number}"
-        page_comments = extract_page_comments(page_url)
+        page_comments = extract_discussion_comments(page_url)
         comments.extend(page_comments)
     return comments
 

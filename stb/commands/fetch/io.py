@@ -31,3 +31,15 @@ def fetch_page(url):
         # TODO handle this better
         return None
     return response.content
+
+
+def get_last_page_number(soup) -> int:
+    """
+    Returns the last page. 
+
+    If no class named 'LastPage' is found it returns 1.
+    """
+    soup_last_page = soup.find_all(class_="LastPage", limit=1)
+    if soup_last_page:
+        return int(soup_last_page[0].text)
+    return 1
