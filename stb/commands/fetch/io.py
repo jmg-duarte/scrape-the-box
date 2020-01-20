@@ -2,6 +2,8 @@ import sys
 import json
 import requests
 
+from bs4 import BeautifulSoup
+
 from typing import Iterable
 
 
@@ -31,6 +33,13 @@ def fetch_page(url):
         # TODO handle this better
         return None
     return response.content
+
+
+def fetch_page_soup(url):
+    page = fetch_page(url)
+    if page:
+        return BeautifulSoup(page, "html.parser")
+    return None
 
 
 def get_last_page_number(soup) -> int:

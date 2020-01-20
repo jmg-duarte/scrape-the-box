@@ -13,9 +13,21 @@ def scrape(tid, output=sys.stdout, fmt="text"):
     io.write_file(comments, output, fmt)
 
 
-def extract_discussion_comments(page_url):
-    html = io.fetch_page(page_url)
-    soup = BeautifulSoup(html, "html.parser")
+def scrape_comments(discussion_id):
+    soup = io.fetch_page_soup(f"{DISCUSSION_URL}/{discussion_id}")
+    page_name = _extract_page_name(soup)
+    print(page_name)
+    last_page = io.get_last_page_number(soup)
+    comments = []
+    for page_number in range(1, last_page + 1):
+        soup = io.fetch_page_soup(
+            f"{DISCUSSION_URL}/{discussion_id}/{page_name}/p{page_number}"
+        )
+        comments.extend(_scrape_comments(soup))
+    return comments
+
+
+def _scrape_comments(soup):
     soup_comments = soup.find_all(class_="Comment")
     page_comments = []
     for c in soup_comments:
@@ -24,19 +36,5 @@ def extract_discussion_comments(page_url):
     return page_comments
 
 
-def scrape_comments(discussion_id):
-    html = fetch_discussion_page(discussion_id)
-    soup = BeautifulSoup(html, "html.parser")
-    page_name = soup.find_all(class_="PageTitle", limit=1)[0].text
-    print(page_name)
-    last_page = io.get_last_page_number(soup)
-    comments = []
-    for page_number in range(1, last_page + 1):
-        page_url = f"{DISCUSSION_URL}/{discussion_id}/{page_name}/p{page_number}"
-        page_comments = extract_discussion_comments(page_url)
-        comments.extend(page_comments)
-    return comments
-
-
-def fetch_discussion_page(tid):
-    return io.fetch_page(f"{DISCUSSION_URL}/{tid}")
+def _extract_page_name(soup):
+    return soup.find_all(class_="PageTitle", limit=1)[0].text
