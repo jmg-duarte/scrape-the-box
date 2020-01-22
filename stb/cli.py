@@ -49,9 +49,10 @@ def print_all_warning(ctx, param, all):
     is_flag=True,
     callback=print_all_warning,
 )
-def fetch_frontpage(output, scrape_all, fmt):
+@click.option("--db", type=str, default=None)
+def fetch_frontpage(output, scrape_all, fmt, db):
     """Fetch the frontpage."""
-    frontpage.scrape(output, scrape_all, fmt)
+    frontpage.scrape(output, scrape_all, fmt, db)
 
 
 @fetch.command("thread")

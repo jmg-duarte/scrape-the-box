@@ -1,6 +1,7 @@
 import requests
 import sys
 import json
+import sqlite3
 
 from bs4 import BeautifulSoup
 
@@ -9,9 +10,10 @@ from typing import Iterable
 from stb.htb import DISCUSSIONS_URL
 from stb.htb.discussion import Discussion
 from stb.commands.fetch import io
+from stb.commands.fetch import db
 
 
-def scrape(output_file, all=False, fmt="text"):
+def scrape(output_file, all=False, fmt="text", db_name=None):
     frontpage_soup = fetch_frontpage_soup()
     if all:
         last_page = io.get_last_page_number(soup)
@@ -23,6 +25,9 @@ def scrape(output_file, all=False, fmt="text"):
         discussions = extract_discussions(frontpage_soup)
     io.write_file(discussions, output_file, fmt)
 
+    if db_name:
+        db.db_cursor_use(db_name, db.create_comment_table())
+
 
 def fetch_frontpage_soup(page_number=1):
     return io.fetch_page_soup(f"{DISCUSSIONS_URL}/p{page_number}")
@@ -33,3 +38,4 @@ def extract_discussions(soup):
     for item in soup.find_all(class_="ItemDiscussion"):
         discussions.append(Discussion.from_item(item))
     return discussions
+
