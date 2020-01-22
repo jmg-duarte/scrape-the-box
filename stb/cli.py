@@ -38,7 +38,7 @@ def print_all_warning(ctx, param, all):
 
 @fetch.command("front")
 @click.option(
-    "-f", "--fmt", "--format", type=click.Choice(["text", "json"]),
+    "-f", "--fmt", "--format", type=click.Choice(["text", "json"]), default="text"
 )
 @click.option("-o", "--output", type=str, default=sys.stdout)
 @click.option(
