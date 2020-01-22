@@ -2,8 +2,6 @@ import re
 
 
 class Discussion(object):
-    __slots__ = ["title", "author", "views", "comments", "permalink", "id"]
-
     def __init__(self, title, author, views, comments, permalink):
         self.title = title.strip()
         self.author = author
