@@ -22,7 +22,7 @@ def _write(iter: Iterable, file, fmt: str):
             file.write(discussion)
     elif fmt == "json":
         # TODO there has to be a better way to do this
-        json.dump(iter, file, default=lambda x: x.__dict__)
+        json.dump(iter, file, default=lambda x: x.__dict__, indent="    ")
     else:
         raise RuntimeError(f"unknown format: {fmt}")
 
