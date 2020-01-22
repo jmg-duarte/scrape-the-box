@@ -2,6 +2,9 @@ from stb.htb import *
 
 
 class Comment(object):
+
+    __slots__ = ["author", "message", "datetime", "permalink"]
+
     def __init__(self, author, message, datetime, permalink):
         self.author = author
         self.message = message.strip()
