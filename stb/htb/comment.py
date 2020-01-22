@@ -24,6 +24,9 @@ class Comment(object):
     def __contains__(self, text_query):
         return text_query in self.message
 
+    def as_tuple(self):
+        return (self.author, self.message, self.datetime, self.permalink)
+
     @staticmethod
     def extract_comment(soup):
         username = soup.find(class_="Username").text

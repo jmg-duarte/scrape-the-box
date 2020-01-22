@@ -24,6 +24,9 @@ class Discussion(object):
             f"---\n"
         )
 
+    def as_tuple(self):
+        return (self.id, self.author, self.permalink, self.title)
+
     @staticmethod
     def _get_discussion_id(permalink):
         if permalink[-1] == "/":
