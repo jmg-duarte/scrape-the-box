@@ -18,7 +18,7 @@ cd "$HOME_DIR" || exit
 
 case "$(uname)" in
     "Linux")
-        gcc -g -fPIC -shared "$SQLITE_NAME/fts5.c" -o "$OUTPUT_DIR/fts5.o"
+        gcc -g -fPIC -shared "$SQLITE_NAME/fts5.c" -o "$OUTPUT_DIR/fts5.so"
     ;;
     "Darwin")
         gcc -g -fPIC -shared "$SQLITE_NAME/fts5.c" -o "$OUTPUT_DIR/fts5.dylib"
