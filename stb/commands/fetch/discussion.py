@@ -5,12 +5,21 @@ from bs4 import BeautifulSoup
 
 from stb.htb import DISCUSSION_URL
 from stb.htb.comment import Comment
+from stb.htb import db
 from stb.commands.fetch import io
 
 
-def scrape(tid, output=sys.stdout, fmt="text"):
+def scrape(tid, output=sys.stdout, fmt="text", db_name=None):
     comments = scrape_comments(tid)
     io.write_file(comments, output, fmt)
+    if db_name:
+        db.db_conn_use(
+            db_name,
+            db.db_cursor_exec(
+                db.db_cursor_create_comments_table(),
+                db.db_cursor_insert_comments(comments),
+            ),
+        )
 
 
 def scrape_comments(discussion_id):
@@ -23,15 +32,15 @@ def scrape_comments(discussion_id):
         soup = io.fetch_page_soup(
             f"{DISCUSSION_URL}/{discussion_id}/{page_name}/p{page_number}"
         )
-        comments.extend(_scrape_comments(soup))
+        comments.extend(_scrape_comments(discussion_id, soup))
     return comments
 
 
-def _scrape_comments(soup):
+def _scrape_comments(discussion_id, soup):
     soup_comments = soup.find_all(class_="Comment")
     page_comments = []
     for c in soup_comments:
-        page_comments.append(Comment.extract_comment(c))
+        page_comments.append(Comment.extract_comment(discussion_id, c))
         # print(f"{page_name} #{page}\n{comment}")
     return page_comments
 

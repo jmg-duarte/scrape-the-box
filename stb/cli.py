@@ -61,6 +61,7 @@ def fetch_frontpage(output, scrape_all, fmt, db):
     "-f", "--fmt", "--format", type=click.Choice(["text", "json"]), default="text"
 )
 @click.option("-o", "--output", type=str, default=sys.stdout)
-def fetch_thread(tid, output, fmt):
+@click.option("--db", type=str, default=None)
+def fetch_thread(tid, output, fmt, db):
     """Fetch a discussion page."""
-    discussion.scrape(tid, output, fmt)
+    discussion.scrape(tid, output, fmt, db)
