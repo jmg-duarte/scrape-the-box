@@ -11,7 +11,7 @@ CREATE_TABLE_DISCUSSIONS = """
         "author"	TEXT NOT NULL,
         "permalink"	TEXT NOT NULL,
         "title"	TEXT NOT NULL,
-        PRIMARY KEY("id")
+        PRIMARY KEY("id") ON CONFLICT IGNORE
     )
 """
 
@@ -22,7 +22,7 @@ CREATE_TABLE_COMMENTS = """
         "message"	TEXT NOT NULL,
         "permalink"	TEXT NOT NULL UNIQUE,
         "datetime"	TEXT NOT NULL,
-        PRIMARY KEY("permalink")
+        PRIMARY KEY("permalink") ON CONFLICT IGNORE
     )
 """
 
