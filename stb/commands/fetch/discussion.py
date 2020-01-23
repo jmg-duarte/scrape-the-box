@@ -12,12 +12,16 @@ from stb.commands.fetch import io
 def scrape(tid, output=sys.stdout, fmt="text", db_name=None):
     comments = scrape_comments(tid)
     io.write_file(comments, output, fmt)
+
     if db_name:
-        db.db_conn_use(
+        db.conn_use(
             db_name,
-            db.db_cursor_exec(
-                db.db_cursor_create_comments_table(),
-                db.db_cursor_insert_comments(comments),
+            db.load_fts(),
+            db.cursor_exec(
+                db.cursor_create_comments_table(),
+                db.cursor_create_comments_virtual_table(tid),
+                db.cursor_insert_comments(comments),
+                db.cursor_insert_virtual_comments(tid, comments),
             ),
         )
 

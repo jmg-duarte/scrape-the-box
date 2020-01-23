@@ -26,6 +26,16 @@ CREATE_TABLE_COMMENTS = """
     )
 """
 
+CREATE_VIRTUAL_TABLE_DISCUSSIONS = """
+    CREATE VIRTUAL TABLE IF NOT EXISTS "v_discussions" 
+        USING fts5(author, title);
+"""
+
+CREATE_VIRTUAL_TABLE_COMMENTS = """
+    CREATE VIRTUAL TABLE IF NOT EXISTS "v_comments_{}" 
+        USING fts5(author, message);
+"""
+
 INSERT_INTO_DISCUSSIONS = """
     INSERT INTO "discussions" (
         "id", 
@@ -33,13 +43,6 @@ INSERT_INTO_DISCUSSIONS = """
         "permalink", 
         "title"
     ) VALUES (?, ?, ?, ?);
-"""
-
-INSERT_INTO_VIRTUAL_DISCUSSIONS = """
-    INSERT INTO "v_discussions" (
-        "author", 
-        "title"
-    ) VALUES (?, ?);
 """
 
 INSERT_INTO_COMMENTS = """
@@ -50,6 +53,21 @@ INSERT_INTO_COMMENTS = """
         "author", 
         "message"
     ) VALUES (?, ?, ?, ?, ?);
+"""
+
+INSERT_INTO_VIRTUAL_DISCUSSIONS = """
+    INSERT INTO "v_discussions" (
+        "author", 
+        "title"
+    ) VALUES (?, ?);
+"""
+
+
+INSERT_INTO_VIRTUAL_COMMENTS = """
+    INSERT INTO "v_comments_{}" (
+        "author", 
+        "message"
+    ) VALUES (?, ?);
 """
 
 
@@ -79,32 +97,10 @@ def load_fts(conn):
 
 
 @_get_runnable
-def create_discussion_virtual_table(conn):
-    conn.execute(
-        f"""
-            CREATE VIRTUAL TABLE IF NOT EXISTS "v_discussions" USING fts5(author, title);
-        """
-    )
-
-
-def full_text_search(db_name):
-    conn_use(db_name, load_fts())
-
-
-@_get_runnable
 def cursor_exec(conn, *runnables):
     cursor = conn.cursor()
     for r in runnables:
         r(cursor)
-
-
-def cursor_use(db_name, *runnables):
-    with sqlite3.connect(db_name) as conn:
-        cursor = conn.cursor()
-        for runnable in runnables:
-            runnable(cursor)
-        conn.commit()
-        # conn.close()
 
 
 @_get_runnable
@@ -113,8 +109,18 @@ def cursor_create_discussions_table(cursor):
 
 
 @_get_runnable
+def cursor_create_discussion_virtual_table(cursor):
+    cursor.execute(CREATE_VIRTUAL_TABLE_DISCUSSIONS)
+
+
+@_get_runnable
 def cursor_create_comments_table(cursor):
     cursor.execute(CREATE_TABLE_COMMENTS)
+
+
+@_get_runnable
+def cursor_create_comments_virtual_table(cursor, discussion_id):
+    cursor.execute(CREATE_VIRTUAL_TABLE_COMMENTS.format(discussion_id))
 
 
 @_get_runnable
@@ -133,3 +139,9 @@ def cursor_insert_discussions(cursor, discussions: Iterable[Discussion]):
 def cursor_insert_virtual_discussions(cursor, discussions: Iterable[Discussion]):
     discussions = map(lambda d: (d.author, d.title), discussions)
     cursor.executemany(INSERT_INTO_VIRTUAL_DISCUSSIONS, discussions)
+
+
+@_get_runnable
+def cursor_insert_virtual_comments(cursor, discussion_id, comments: Iterable[Comment]):
+    comments = map(lambda d: (d.author, d.message), comments)
+    cursor.executemany(INSERT_INTO_VIRTUAL_COMMENTS.format(discussion_id), comments)
