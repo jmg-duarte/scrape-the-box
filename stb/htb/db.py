@@ -99,6 +99,8 @@ def load_fts(conn):
 @_get_runnable
 def cursor_exec(conn, *runnables):
     cursor = conn.cursor()
+    # TODO maybe return a list of runnable results?
+    # TODO maybe create another method
     for r in runnables:
         r(cursor)
 
@@ -145,3 +147,17 @@ def cursor_insert_virtual_discussions(cursor, discussions: Iterable[Discussion])
 def cursor_insert_virtual_comments(cursor, discussion_id, comments: Iterable[Comment]):
     comments = map(lambda d: (d.author, d.message), comments)
     cursor.executemany(INSERT_INTO_VIRTUAL_COMMENTS.format(discussion_id), comments)
+
+
+@_get_runnable
+def cursor_fts_discussions(cursor, search_term):
+    # the DISTINCT is a solution to a bigger problem
+    # TODO fix the fact that every time a query is made, duplicates are written to the virtual table
+    print(search_term)
+    cursor.execute(
+        """
+        SELECT DISTINCT * FROM "v_discussions" WHERE title MATCH ? ORDER BY rank
+        """,
+        (search_term,),
+    )
+    print(cursor.fetchall())
