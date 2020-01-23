@@ -10,12 +10,6 @@ def cli():
     pass
 
 
-@cli.command("search")
-def search():
-    """[WIP] Search downloaded pages."""
-    print("search")
-
-
 @cli.group("fetch")
 def fetch():
     """Fetch a page."""
@@ -65,3 +59,24 @@ def fetch_frontpage(output, scrape_all, fmt, db):
 def fetch_thread(tid, output, fmt, db):
     """Fetch a discussion page."""
     discussion.scrape(tid, output, fmt, db)
+
+
+@cli.group("search")
+def search():
+    """[WIP] Search downloaded pages."""
+    print("search")
+
+
+@search.command("thread")
+@click.argument("tid", type=str)
+@click.argument("search_term", type=str)
+def search_thread():
+    """Search the discussion/thread for comments."""
+    pass
+
+
+@search.command("frontpage")
+@click.argument("search_term", type=str)
+def search_frontpage():
+    """Search the frontpage for discussions/threads."""
+    pass
