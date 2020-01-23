@@ -201,4 +201,9 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 *.stb
+*.db
+
 stb_out/
+
+# Downloaded SQLite files and directories 
+SQLite-*
