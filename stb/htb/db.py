@@ -35,6 +35,13 @@ INSERT_INTO_DISCUSSIONS = """
     ) VALUES (?, ?, ?, ?);
 """
 
+INSERT_INTO_VIRTUAL_DISCUSSIONS = """
+    INSERT INTO "v_discussions" (
+        "author", 
+        "title"
+    ) VALUES (?, ?);
+"""
+
 INSERT_INTO_COMMENTS = """
     INSERT INTO "comments" (
         "discussion_id", 
@@ -56,7 +63,7 @@ def _get_runnable(f):
     return _f_with_parameters
 
 
-def db_conn_use(db_name, *runnables):
+def conn_use(db_name, *runnables):
     with sqlite3.connect(db_name) as conn:
         for runnable in runnables:
             runnable(conn)
@@ -65,13 +72,33 @@ def db_conn_use(db_name, *runnables):
 
 
 @_get_runnable
-def db_cursor_exec(conn, *runnables):
+def load_fts(conn):
+    conn.enable_load_extension(True)
+    conn.load_extension("./fts5")
+    conn.enable_load_extension(False)
+
+
+@_get_runnable
+def create_discussion_virtual_table(conn):
+    conn.execute(
+        f"""
+            CREATE VIRTUAL TABLE IF NOT EXISTS "v_discussions" USING fts5(author, title);
+        """
+    )
+
+
+def full_text_search(db_name):
+    conn_use(db_name, load_fts())
+
+
+@_get_runnable
+def cursor_exec(conn, *runnables):
     cursor = conn.cursor()
     for r in runnables:
         r(cursor)
 
 
-def db_cursor_use(db_name, *runnables):
+def cursor_use(db_name, *runnables):
     with sqlite3.connect(db_name) as conn:
         cursor = conn.cursor()
         for runnable in runnables:
@@ -81,32 +108,28 @@ def db_cursor_use(db_name, *runnables):
 
 
 @_get_runnable
-def db_cursor_create_discussions_table(cursor):
+def cursor_create_discussions_table(cursor):
     cursor.execute(CREATE_TABLE_DISCUSSIONS)
 
 
 @_get_runnable
-def db_cursor_create_comments_table(cursor):
+def cursor_create_comments_table(cursor):
     cursor.execute(CREATE_TABLE_COMMENTS)
 
 
 @_get_runnable
-def db_cursor_insert_comment(cursor, comment: Comment):
-    cursor.execute(INSERT_INTO_COMMENTS, comment.as_tuple())
-
-
-@_get_runnable
-def db_cursor_insert_comments(cursor, comments: Iterable[Comment]):
+def cursor_insert_comments(cursor, comments: Iterable[Comment]):
     comments = map(lambda c: c.as_tuple(), comments)
     cursor.executemany(INSERT_INTO_COMMENTS, comments)
 
 
 @_get_runnable
-def db_cursor_insert_discussion(cursor, discussion: Discussion):
-    cursor.execute(INSERT_INTO_DISCUSSIONS, discussion.as_tuple())
+def cursor_insert_discussions(cursor, discussions: Iterable[Discussion]):
+    discussions = map(lambda d: d.as_tuple(), discussions)
+    cursor.executemany(INSERT_INTO_DISCUSSIONS, discussions)
 
 
 @_get_runnable
-def db_cursor_insert_discussions(cursor, discussions: Iterable[Discussion]):
-    discussions = map(lambda d: d.as_tuple(), discussions)
-    cursor.executemany(INSERT_INTO_DISCUSSIONS, discussions)
+def cursor_insert_virtual_discussions(cursor, discussions: Iterable[Discussion]):
+    discussions = map(lambda d: (d.author, d.title), discussions)
+    cursor.executemany(INSERT_INTO_VIRTUAL_DISCUSSIONS, discussions)

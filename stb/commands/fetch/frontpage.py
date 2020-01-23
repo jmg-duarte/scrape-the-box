@@ -25,11 +25,14 @@ def scrape(output_file, all=False, fmt="text", db_name=None):
     io.write_file(discussions, output_file, fmt)
 
     if db_name:
-        db.db_conn_use(
+        db.conn_use(
             db_name,
-            db.db_cursor_exec(
-                db.db_cursor_create_discussions_table(),
-                db.db_cursor_insert_discussions(discussions),
+            db.load_fts(),
+            db.cursor_exec(
+                db.cursor_create_discussions_table(),
+                db.create_discussion_virtual_table(),
+                db.cursor_insert_discussions(discussions),
+                db.cursor_insert_virtual_discussions(discussions),
             ),
         )
 
