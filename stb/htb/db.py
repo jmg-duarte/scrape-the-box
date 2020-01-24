@@ -179,11 +179,10 @@ def cursor_insert_virtual_comments(cursor, discussion_id, comments: Iterable[Com
 
 
 @_get_runnable
-def cursor_fts_discussions(cursor, search_term):
+def cursor_fts_discussions(cursor, search_term, callback):
     # the DISTINCT is a solution to a bigger problem
     # TODO fix the fact that every time a query is made, duplicates are written to the virtual table
-    print(search_term)
     cursor.execute(
         SELECT_DISCUSSIONS, (search_term,),
     )
-    print(cursor.fetchall())
+    callback(cursor.fetchall())
