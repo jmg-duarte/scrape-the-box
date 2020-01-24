@@ -5,6 +5,32 @@ from typing import Iterable
 from stb.htb.discussion import Discussion
 from stb.htb.comment import Comment
 
+CREATE_TRIGGER_DISCUSSIONS = """
+    CREATE TRIGGER IF NOT EXISTS "trigger_discussions" BEFORE
+    INSERT ON "discussions"
+    FOR EACH ROW WHEN (
+        NOT EXISTS(
+            SELECT 1 FROM discussions WHERE discussions.id IS NEW.id
+        )
+    ) 
+    BEGIN
+        INSERT INTO "v_discussions" VALUES (NEW.author, NEW.title);
+    END
+"""
+
+CREATE_TRIGGER_COMMENTS = """
+    CREATE TRIGGER IF NOT EXISTS "trigger_comments_{tid}" BEFORE
+    INSERT ON "comments"
+    FOR EACH ROW WHEN (
+        NOT EXISTS(
+            SELECT 1 FROM comments WHERE comments.permalink IS NEW.permalink
+        )
+    ) 
+    BEGIN
+        INSERT INTO "v_comments_{tid}" VALUES (NEW.author, NEW.message);
+    END
+"""
+
 CREATE_TABLE_DISCUSSIONS = """
     CREATE TABLE IF NOT EXISTS "discussions" (
         "id"	INTEGER NOT NULL UNIQUE,
@@ -22,7 +48,7 @@ CREATE_TABLE_COMMENTS = """
         "message"	TEXT NOT NULL,
         "permalink"	TEXT NOT NULL UNIQUE,
         "datetime"	TEXT NOT NULL,
-        PRIMARY KEY("permalink") ON CONFLICT IGNORE
+        PRIMARY KEY("permalink")
     )
 """
 
@@ -32,7 +58,7 @@ CREATE_VIRTUAL_TABLE_DISCUSSIONS = """
 """
 
 CREATE_VIRTUAL_TABLE_COMMENTS = """
-    CREATE VIRTUAL TABLE IF NOT EXISTS "v_comments_{}" 
+    CREATE VIRTUAL TABLE IF NOT EXISTS "v_comments_{tid}" 
         USING fts5(author, message);
 """
 
@@ -42,7 +68,8 @@ INSERT_INTO_DISCUSSIONS = """
         "author", 
         "permalink", 
         "title"
-    ) VALUES (?, ?, ?, ?);
+    ) VALUES (?, ?, ?, ?)
+    ON CONFLICT DO NOTHING;
 """
 
 INSERT_INTO_COMMENTS = """
@@ -52,7 +79,8 @@ INSERT_INTO_COMMENTS = """
         "datetime",
         "author", 
         "message"
-    ) VALUES (?, ?, ?, ?, ?);
+    ) VALUES (?, ?, ?, ?, ?)
+    ON CONFLICT DO NOTHING;
 """
 
 INSERT_INTO_VIRTUAL_DISCUSSIONS = """
@@ -68,6 +96,13 @@ INSERT_INTO_VIRTUAL_COMMENTS = """
         "author", 
         "message"
     ) VALUES (?, ?);
+"""
+
+SELECT_DISCUSSIONS = """
+    SELECT DISTINCT * 
+    FROM "v_discussions" 
+    WHERE title MATCH ? 
+    ORDER BY rank
 """
 
 
@@ -106,23 +141,17 @@ def cursor_exec(conn, *runnables):
 
 
 @_get_runnable
-def cursor_create_discussions_table(cursor):
+def cursor_create_discussions(cursor):
     cursor.execute(CREATE_TABLE_DISCUSSIONS)
-
-
-@_get_runnable
-def cursor_create_discussion_virtual_table(cursor):
     cursor.execute(CREATE_VIRTUAL_TABLE_DISCUSSIONS)
+    cursor.execute(CREATE_TRIGGER_DISCUSSIONS)
 
 
 @_get_runnable
-def cursor_create_comments_table(cursor):
+def cursor_create_comments(cursor, discussion_id):
     cursor.execute(CREATE_TABLE_COMMENTS)
-
-
-@_get_runnable
-def cursor_create_comments_virtual_table(cursor, discussion_id):
-    cursor.execute(CREATE_VIRTUAL_TABLE_COMMENTS.format(discussion_id))
+    cursor.execute(CREATE_VIRTUAL_TABLE_COMMENTS.format(tid=discussion_id))
+    cursor.execute(CREATE_TRIGGER_COMMENTS.format(tid=discussion_id))
 
 
 @_get_runnable
@@ -140,13 +169,13 @@ def cursor_insert_discussions(cursor, discussions: Iterable[Discussion]):
 @_get_runnable
 def cursor_insert_virtual_discussions(cursor, discussions: Iterable[Discussion]):
     discussions = map(lambda d: (d.author, d.title), discussions)
-    cursor.executemany(INSERT_INTO_VIRTUAL_DISCUSSIONS, discussions)
+    # cursor.executemany(INSERT_INTO_VIRTUAL_DISCUSSIONS, discussions)
 
 
 @_get_runnable
 def cursor_insert_virtual_comments(cursor, discussion_id, comments: Iterable[Comment]):
     comments = map(lambda d: (d.author, d.message), comments)
-    cursor.executemany(INSERT_INTO_VIRTUAL_COMMENTS.format(discussion_id), comments)
+    # cursor.executemany(INSERT_INTO_VIRTUAL_COMMENTS.format(discussion_id), comments)
 
 
 @_get_runnable
@@ -155,9 +184,6 @@ def cursor_fts_discussions(cursor, search_term):
     # TODO fix the fact that every time a query is made, duplicates are written to the virtual table
     print(search_term)
     cursor.execute(
-        """
-        SELECT DISTINCT * FROM "v_discussions" WHERE title MATCH ? ORDER BY rank
-        """,
-        (search_term,),
+        SELECT_DISCUSSIONS, (search_term,),
     )
     print(cursor.fetchall())

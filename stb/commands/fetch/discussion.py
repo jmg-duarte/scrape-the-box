@@ -18,8 +18,7 @@ def scrape(tid, output=sys.stdout, fmt="text", db_name=None):
             db_name,
             db.load_fts(),
             db.cursor_exec(
-                db.cursor_create_comments_table(),
-                db.cursor_create_comments_virtual_table(tid),
+                db.cursor_create_comments(tid),
                 db.cursor_insert_comments(comments),
                 db.cursor_insert_virtual_comments(tid, comments),
             ),

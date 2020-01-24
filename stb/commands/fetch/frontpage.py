@@ -29,8 +29,7 @@ def scrape(output_file, all=False, fmt="text", db_name=None):
             db_name,
             db.load_fts(),
             db.cursor_exec(
-                db.cursor_create_discussions_table(),
-                db.cursor_create_discussion_virtual_table(),
+                db.cursor_create_discussions(),
                 db.cursor_insert_discussions(discussions),
                 db.cursor_insert_virtual_discussions(discussions),
             ),
