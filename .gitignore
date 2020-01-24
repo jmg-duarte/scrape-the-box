@@ -207,3 +207,5 @@ stb_out/
 
 # Downloaded SQLite files and directories 
 SQLite-*
+
+.vscode/
