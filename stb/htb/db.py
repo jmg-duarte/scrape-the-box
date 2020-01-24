@@ -99,8 +99,15 @@ INSERT_INTO_VIRTUAL_COMMENTS = """
 """
 
 SELECT_DISCUSSIONS = """
-    SELECT DISTINCT * 
+    SELECT * 
     FROM "v_discussions" 
+    WHERE title MATCH ? 
+    ORDER BY rank
+"""
+
+SELECT_COMMENTS = """
+    SELECT * 
+    FROM "v_comments_{tid}" 
     WHERE title MATCH ? 
     ORDER BY rank
 """
@@ -180,9 +187,21 @@ def cursor_insert_virtual_comments(cursor, discussion_id, comments: Iterable[Com
 
 @_get_runnable
 def cursor_fts_discussions(cursor, search_term, callback):
-    # the DISTINCT is a solution to a bigger problem
-    # TODO fix the fact that every time a query is made, duplicates are written to the virtual table
     cursor.execute(
         SELECT_DISCUSSIONS, (search_term,),
     )
+    callback(cursor.fetchall())
+
+
+@_get_runnable
+def cursor_fts_comments(cursor, thread_id, search_term, callback):
+    try:
+        cursor.execute(
+            SELECT_COMMENTS.format(tid=thread_id), (thread_id, search_term,),
+        )
+    except sqlite3.OperationalError as e:
+        print(
+            f"Thread {thread_id} was not found.\nHave you tried downloading it with:\n\n\tstb fetch thread {thread_id} --db"
+        )
+        return
     callback(cursor.fetchall())

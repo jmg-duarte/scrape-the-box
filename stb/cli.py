@@ -65,7 +65,7 @@ def search_thread(tid, search_term, db):
     """Search the discussion/thread for comments."""
     from stb.commands.search import discussion
 
-    pass
+    discussion.search(tid, search_term, db)
 
 
 @search.command("frontpage")
