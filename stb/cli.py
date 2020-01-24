@@ -4,6 +4,9 @@ import sys
 from stb.commands import callbacks
 
 
+DEFAULT_DB_NAME = ".stb.db"
+
+
 @click.group()
 def cli():
     pass
@@ -27,12 +30,11 @@ def fetch():
     is_flag=True,
     callback=callbacks.print_all_warning,
 )
-@click.option("--db", type=str, flag_value=".stb.db")
+@click.option("--db", type=str, flag_value=DEFAULT_DB_NAME)
 def fetch_frontpage(output, scrape_all, fmt, db):
     """Fetch the frontpage."""
     from stb.commands.fetch import frontpage
 
-    print(db)
     frontpage.scrape(output, scrape_all, fmt, db)
 
 
@@ -42,7 +44,7 @@ def fetch_frontpage(output, scrape_all, fmt, db):
     "-f", "--fmt", "--format", type=click.Choice(["text", "json"]), default="text"
 )
 @click.option("-o", "--output", type=str, default=sys.stdout)
-@click.option("--db", type=str, flag_value=".stb.db")
+@click.option("--db", type=str, flag_value=DEFAULT_DB_NAME)
 def fetch_thread(tid, output, fmt, db):
     """Fetch a discussion page."""
     from stb.commands.fetch import discussion
@@ -58,7 +60,7 @@ def search():
 @search.command("thread")
 @click.argument("tid", type=str)
 @click.argument("search_term", type=str)
-@click.option("--db", type=str, default=".stb.db")
+@click.option("--db", type=str, default=DEFAULT_DB_NAME)
 def search_thread(tid, search_term, db):
     """Search the discussion/thread for comments."""
     from stb.commands.search import discussion
@@ -68,7 +70,7 @@ def search_thread(tid, search_term, db):
 
 @search.command("frontpage")
 @click.argument("search_term", type=str)
-@click.option("--db", type=str, default=".stb.db")
+@click.option("--db", type=str, default=DEFAULT_DB_NAME)
 def search_frontpage(search_term, db):
     """Search the frontpage for discussions/threads."""
     from stb.commands.search import frontpage
