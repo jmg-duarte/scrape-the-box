@@ -6,7 +6,7 @@ OUTPUT_DIR="$1"
 SQLITE_NAME="SQLite-release"
 SQLITE_TGZ="$SQLITE_NAME.tgz" 
 
-/usr/bin/wget -c "www.sqlite.org/src/tarball/SQLite-release.tgz?uuid=release" -O $SQLITE_TGZ
+/usr/bin/wget -c "https://www.sqlite.org/src/tarball/SQLite-release.tgz?uuid=release" -O $SQLITE_TGZ
 
 /usr/bin/tar -xzf $SQLITE_TGZ
 
