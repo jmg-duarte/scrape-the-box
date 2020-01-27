@@ -2,15 +2,33 @@
 
 ## Installation
 
+Clone this repository
+
+```
+git clone https://github.com/jmg-duarte/scrape-the-box.git stb
+```
+
+And install with:
+
 ```
 pip install -r requirements.txt
-python setup.py install
+pip install .
 stb
 ```
 
-## Documentation
+### Notes
 
-Pretty much non-existent but the CLI can help!
+To use the `--db` flag you need the SQLite FTS5 library available.
+A script is provided to download, install and build it for you, just run:
+
+```
+sh build_fts5.sh
+```
+
+## Getting started
+
+`stb` is supposed to be simple to understand and the flags easy to memorize. 
+For each command you can add `--help` to get more information.
 
 ```
 λ stb --help
@@ -21,13 +39,5 @@ Options:
 
 Commands:
   fetch   Fetch a page.
-  search  [WIP] Search downloaded pages.
+  search  Search downloaded pages.
 ```
-
-## How to Search
-
-So far `stb` does not support search (yet!).
-
-In order to search you can use the classic `grep`, however it will only show the line.
-
-In order to avoid so, you can use your favorite text editor or `less`.
