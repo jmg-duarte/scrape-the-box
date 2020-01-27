@@ -12,7 +12,6 @@ class PostInstallCommand(install):
 setup(
     name="scrape-the-box",
     version="0.2.0",
-    py_modules=["stb"],
     packages=find_packages(),
     include_package_data=True,
     install_requires=["click", "bs4", "requests",],
@@ -20,11 +19,11 @@ setup(
         [console_scripts]
         stb=stb.cli:cli
     """,
-    zip_safe=False,
     author="José Duarte",
     author_email="jmg.duarte@campus.fct.unl.pt",
     description="A CLI tool to scrape the Hack the Box forum",
     keywords="scrape htb",
     url="https://github.com/jmg-duarte/scrape-the-box",
     project_urls={"Source Code": "https://github.com/jmg-duarte/scrape-the-box",},
+    zip_safe=False,
 )
