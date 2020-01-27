@@ -18,10 +18,14 @@ cd "$HOME_DIR" || exit
 
 case "$(uname)" in
     "Linux")
-        /usr/bin/gcc -g -fPIC -shared "$SQLITE_NAME/fts5.c" -o "$OUTPUT_DIR/fts5.so"
+        OUT_LIB="fts5.so"
+        /usr/bin/gcc -g -fPIC -shared "$SQLITE_NAME/fts5.c" -o "$OUTPUT_DIR/$OUT_LIB"
+        sudo /usr/bin/cp "$OUTPUT_DIR/$OUT_LIB" "/usr/local/lib/$OUT_LIB"
     ;;
     "Darwin")
-        /usr/bin/gcc -g -fPIC -shared "$SQLITE_NAME/fts5.c" -o "$OUTPUT_DIR/fts5.dylib"
+        OUT_LIB="fts5.dylib"
+        /usr/bin/gcc -g -fPIC -shared "$SQLITE_NAME/fts5.c" -o "$OUTPUT_DIR/$OUT_LIB"
+        sudo /usr/bin/cp "$OUTPUT_DIR/$OUT_LIB" "/usr/local/lib/$OUT_LIB"
     ;;
     *) exit
 esac
