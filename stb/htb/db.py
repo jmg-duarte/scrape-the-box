@@ -134,7 +134,7 @@ def conn_use(db_name, *runnables):
 @_get_runnable
 def load_fts(conn):
     conn.enable_load_extension(True)
-    conn.load_extension("/usr/local/lib/fts5")
+    conn.load_extension("/usr/local/lib/stb/fts5")
     conn.enable_load_extension(False)
 
 
