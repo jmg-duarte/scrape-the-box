@@ -8,11 +8,12 @@ class PostInstallCommand(install):
         check_call("sh build_fts5.sh .")
         install.run(self)
 
+
 setup(
     name="scrape-the-box",
     version="0.2.0",
     py_modules=["stb"],
-    packages=find_packages()
+    packages=find_packages(),
     include_package_data=True,
     install_requires=["click", "bs4", "requests",],
     entry_points="""
@@ -25,7 +26,5 @@ setup(
     description="A CLI tool to scrape the Hack the Box forum",
     keywords="scrape htb",
     url="https://github.com/jmg-duarte/scrape-the-box",
-    project_urls={
-        "Source Code": "https://github.com/jmg-duarte/scrape-the-box",
-    }
+    project_urls={"Source Code": "https://github.com/jmg-duarte/scrape-the-box",},
 )
